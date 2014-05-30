@@ -6,6 +6,7 @@
 	unset($_SESSION['SESS_USER_ID']);
 	unset($_SESSION['SESS_USER_FIRST']);
 	unset($_SESSION['SESS_USER_LAST']);
+	unset($_SESSION['SESS_USER_PROGRAM']);
 ?>
 
 <!DOCTYPE html>
@@ -50,5 +51,4 @@
 				</div>
 			</div>
 		</form>
-	</body>
-</html>
+<?php //markup continues on footer.php ?>

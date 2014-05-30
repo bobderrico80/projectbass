@@ -2,8 +2,8 @@
 	//start the session
 	session_start();
 	
-	//include database connection details
-	require_once('/home/rhytxfpd/public_html/projectbass/sql/connection.php');
+	//include user database connection details
+	require_once(LIB_DIR . 'loginconnection.php');
 	
 	//array to store validation errors
 	$errmsgArr = array();
@@ -56,8 +56,9 @@
 			$_SESSION['SESS_USER_ID'] = $user['userId'];
 			$_SESSION['SESS_USER_FIRST'] = $user['userFirst'];
 			$_SESSION['SESS_USER_LAST'] = $user['userLast'];
+			$_SESSION['SESS_USER_PROGRAM'] = $user['userProgram'];
 			session_write_close();
-			header('location: /home/index.php');
+			header('location: /dashboard/index.php');
 			exit();
 		} else {
 			//Login failed

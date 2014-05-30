@@ -2,7 +2,7 @@ As a middle school band director for over 10 years, I have relied on various too
 
 My goal, called Project Bass at this point, is to build a web app designed to manage all of the aspects of a school music program.  The web app will track students, ensembles, lessons, attendance, schedules, music libraries, uniforms, and fundraising.
 
-In the short term, I hope to have Project Bass up and running for myself and a few alpha tester director friends of mine by September of 2014.  Eventually, I would like to scale my project to a larger group of users, come up with a business plan, and market this project to music teachers.  Eventually, I would be building Android/iOS apps as well.
+In the short term, I hope to have Project Bass up and running for myself and a few alpha tester director friends of mine by September of 2014.  .
 
 I am a novice web programmer, who is learning as I go.  Though I am a music teacher, my true passions lie in web development.  This project is a way for me to combine my career with my hobby.
 

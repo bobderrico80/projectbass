@@ -1,0 +1,87 @@
+/* Global styles */
+body {
+	margin:0px;
+	font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+	text-decoration:none;
+}
+
+a:hover {
+	text-decoration:underline;
+}
+
+/* Userbar styles */
+
+#userBar {
+	width:100%;
+	height:35px;
+	background-color:#04376C;
+	color:white;
+}
+
+#userBar a:link {
+	color: #ADD5FF;
+}
+
+#userBar a:visited {
+	color: #ADD5FF;
+}
+
+#titleArea {
+	float:left;
+	font-size:1.4em;
+	margin-left:10px;
+	font-weight:bold;
+}
+
+#userArea {
+	float:right;
+}
+
+#username {
+	line-height:32px;
+	margin-right:10px;
+	display:inline-block;
+}
+
+#userOpts {
+	display:inline-block;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+/* Masthead styles */
+
+#masthead {
+	width:100%;
+	height:70px;
+	font-size:2.5em;
+	background-color:white;
+	margin-left:10px;
+	color:#04376C;
+	line-height:85px;
+}
+
+/* Navbar styles */
+
+#navBar {
+	width:100%;
+	height:40px;
+	background-color:#26517C;
+}
+
+/* Footer styles */
+
+#footer {
+	position:fixed;
+	width:100%;
+	height:35px;
+	left:0px;
+	bottom:0px;
+	margin:0px;
+	background-color:black;
+	color:white;
+	text-align:center;
+}

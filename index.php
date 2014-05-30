@@ -7,5 +7,4 @@
 	<body>
 		<h1>Welcome to Project Bass</h1>
 		<p><a href="/login/index.php">Login</a></p>
-	</body>
-</html>
+<?php //markup continues on footer.php ?>
