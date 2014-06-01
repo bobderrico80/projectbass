@@ -71,6 +71,41 @@ a:hover {
 	height:40px;
 	background-color:#26517C;
 }
+#nav {
+	list-style:none;
+	margin:0px;
+	padding:0px;
+	text-align:center;
+}
+
+#nav li {
+	display:inline-block;
+}
+
+#nav a {
+	display:inline-block;
+	width:100px;
+	height:30px;
+	margin-top:5px;
+	margin-left:1px;
+	margin-right:1px;
+	font-size:1em;
+	background-color:#5B8DBE;
+	line-height:30px;
+	border-radius:5px;
+	color:white;
+}
+
+#nav a:hover {
+	text-decoration:none;
+	background-color:#BAC7D3;
+	color:#04376C;
+}
+
+#nav a.current {
+	background-color:#BAC7D3;
+	color:#04376C;
+}
 
 /* Footer styles */
 

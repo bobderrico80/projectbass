@@ -22,4 +22,16 @@
 	function get_program_name() {
 		echo $_SESSION['SESS_USER_PROGRAM'];
 	}
+	
+	//Returns "current" if calling php script is in the current directory, otherwise returns an empty string
+	function is_current($dirname) {
+		$path = $_SERVER['PHP_SELF'];
+		$splitPath = explode('/', $path);
+		$dir = $splitPath[1];
+		if ($dir == $dirname) {
+			echo 'class="current"';
+		} else {
+			echo '';
+		}		
+	}
 ?>
