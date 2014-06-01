@@ -1,8 +1,8 @@
 <?php
 	//MySQL connection variables
 	$hostname = 'localhost';
-	$user = 'rhytxfpd_admin';
-	$pw = '&3[Swa7usTs3';
+	$user = ini_get('mysqli.default_user');
+	$pw = ini_get('mysqli.default_pw');
 	$database = 'rhytxfpd_projectbass_admin';
 	
 	//Connect to database
