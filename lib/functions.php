@@ -4,12 +4,17 @@
 		require_once(COMP_DIR . 'header.php');
 	}
 	
-	//Displays page title
-	function get_page_title() {
+	//Returns current parent directory of calling php script
+	function get_parent_dir() {
 		$path = $_SERVER['PHP_SELF'];
 		$splitPath = explode('/', $path);
-		$titleLower = $splitPath[1];
-		$titleUpper = ucfirst($titleLower);
+		return $splitPath[1];
+	}
+	
+	//Displays page title
+	function get_page_title() {
+		$title = get_parent_dir();
+		$titleUpper = ucfirst($title);
 		echo $titleUpper;
 	}
 	
@@ -23,15 +28,18 @@
 		echo $_SESSION['SESS_USER_PROGRAM'];
 	}
 	
-	//Returns "current" if calling php script is in the current directory, otherwise returns an empty string
+	//Echoes 'class="current"' if calling php script is in the current directory, otherwise echoes an empty string
 	function is_current($dirname) {
-		$path = $_SERVER['PHP_SELF'];
-		$splitPath = explode('/', $path);
-		$dir = $splitPath[1];
+		$dir = get_parent_dir();
 		if ($dir == $dirname) {
 			echo 'class="current"';
 		} else {
 			echo '';
 		}		
+	}
+	
+	//Displays the sidebar of the current page
+	function get_sidebar() {
+		require_once(COMP_DIR . 'sidebars.php');
 	}
 ?>
