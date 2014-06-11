@@ -42,4 +42,47 @@
 	function get_sidebar() {
 		require_once(COMP_DIR . 'sidebars.php');
 	}
+	
+	//Displays formatted table for the specified sql string
+	/* NOTE: function is designed for SELECT queries where the first
+	field is the primary key.  This field will not display, but it's
+	value will be written as the id for each table row element, as well
+	as the id for a checkbox element that will display at the start of
+	each row.
+	*/
+	function display_table($sql, $tid) {
+		
+		$userdb = $_SESSION['SESS_USER_DB'];
+		$rst = mysqli_query($userdb,$sql);
+		
+		//code to print column headings
+		$fields = mysqli_fetch_fields($rst);
+		echo '<table id="' . $tid . '" class="recordset">';
+		echo '<thead>';
+		echo '<tr id="header">';
+		echo '<td></td>'; //empty cell for checkbox column
+		for ($i = 1; $i < count($fields); $i++) {
+			echo '<td>' . $fields[$i]->name . '</td>';
+		}
+		echo '</tr>';
+		echo '</thead>';
+		
+		//code to print records
+		echo '<tbody>';
+		while ($record = mysqli_fetch_row($rst)) {
+			$rowcount++;
+			if ($rowcount % 2 == 0) {
+				echo '<tr id="' . $record[0] .'" class="altrow">';
+			} else {
+				echo '<tr id="' . $record[0] .'">';
+			}
+			echo '<td><input type="checkbox" class="recordselect" id="' . $record[0] . '"/></td>';
+			for ($i = 1; $i < count($record); $i++) {
+				echo '<td>' . $record[$i] . '</td>';
+			}
+			echo '</tr>';
+		}
+		echo '</tbody>';		
+		echo '</table>';
+	}
 ?>

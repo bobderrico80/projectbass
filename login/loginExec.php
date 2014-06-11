@@ -54,6 +54,7 @@
 			session_regenerate_id();
 			$user = mysqli_fetch_assoc($rst);
 			$_SESSION['SESS_USER_ID'] = $user['userId'];
+			$_SESSION['SESS_USER_PW'] = $user['userPW'];
 			$_SESSION['SESS_USER_FIRST'] = $user['userFirst'];
 			$_SESSION['SESS_USER_LAST'] = $user['userLast'];
 			$_SESSION['SESS_USER_PROGRAM'] = $user['userProgram'];

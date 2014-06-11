@@ -7,6 +7,7 @@
 	unset($_SESSION['SESS_USER_FIRST']);
 	unset($_SESSION['SESS_USER_LAST']);
 	unset($_SESSION['SESS_USER_PROGRAM']);
+	unset($_SESSION['SESS_USER_PW']);
 ?>
 
 <!DOCTYPE html>
