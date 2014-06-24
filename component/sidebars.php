@@ -1,8 +1,15 @@
 <?php
 	//selects appropriate sidebar menu according to current parent directory
 	switch (get_parent_dir()) {
-		case 'dashboard':
-			?>
+		case 'students':
+		?>
+			<ul id="sidebarMenu">
+				<li class="menuItem"><a href="addNewStudent.php">Add New Student</a></li>
+			</ul>
+		<?php
+			break;
+		default:
+		?>
 			<ul id="sidebarMenu">
 				<li class="menuItem"><a href="#">Menu Item 1</a></li>
 				<li class="menuItem"><a href="#">Menu Item 2</a>
@@ -13,7 +20,6 @@
 				</li>
 				<li class="menuItem"><a href="#">Menu Item 2</a></li>
 			</ul>
-			<?php
-			break;
+		<?php
 	}
 ?>

@@ -85,4 +85,76 @@
 		echo '</tbody>';		
 		echo '</table>';
 	}
+	
+	//Populates a listbox (<select>) with options based on an SQL query
+	/* Select only two columns! the first column should be an index value
+	(i.e. the primary key of the table), and the second column should be
+	the text to be displayed as the option in the listbox */
+	function get_list_contents($sql) {
+		
+		$userdb = $_SESSION['SESS_USER_DB'];
+		$rst = mysqli_query($userdb,$sql);
+		
+		while ($record = mysqli_fetch_row($rst)) {
+			echo '<option value = "' . $record[0] . '">' . $record[1] .'</option>';
+		}
+	}
+	
+	//Populates a listbox with the US States (values as abbreviations)
+	function get_list_states(){
+		$states = array('AL'=>"Alabama",
+					'AK'=>"Alaska",
+					'AZ'=>"Arizona",
+					'AR'=>"Arkansas",
+					'CA'=>"California",
+					'CO'=>"Colorado",
+					'CT'=>"Connecticut",
+					'DE'=>"Delaware",
+					'DC'=>"District Of Columbia",
+					'FL'=>"Florida",
+					'GA'=>"Georgia",
+					'HI'=>"Hawaii",
+					'ID'=>"Idaho",
+					'IL'=>"Illinois",
+					'IN'=>"Indiana",
+					'IA'=>"Iowa",
+					'KS'=>"Kansas",
+					'KY'=>"Kentucky",
+					'LA'=>"Louisiana",
+					'ME'=>"Maine",
+					'MD'=>"Maryland",
+					'MA'=>"Massachusetts",
+					'MI'=>"Michigan",
+					'MN'=>"Minnesota",
+					'MS'=>"Mississippi",
+					'MO'=>"Missouri",
+					'MT'=>"Montana",
+					'NE'=>"Nebraska",
+					'NV'=>"Nevada",
+					'NH'=>"New Hampshire",
+					'NJ'=>"New Jersey",
+					'NM'=>"New Mexico",
+					'NY'=>"New York",
+					'NC'=>"North Carolina",
+					'ND'=>"North Dakota",
+					'OH'=>"Ohio",
+					'OK'=>"Oklahoma",
+					'OR'=>"Oregon",
+					'PA'=>"Pennsylvania",
+					'RI'=>"Rhode Island",
+					'SC'=>"South Carolina",
+					'SD'=>"South Dakota",
+					'TN'=>"Tennessee",
+					'TX'=>"Texas",
+					'UT'=>"Utah",
+					'VT'=>"Vermont",
+					'VA'=>"Virginia",
+					'WA'=>"Washington",
+					'WV'=>"West Virginia",
+					'WI'=>"Wisconsin",
+					'WY'=>"Wyoming");
+		foreach ($states as $key=>$val) {
+			echo '<option value="' . $key . '">' . $val . '</option>';
+		}
+	}
 ?>
