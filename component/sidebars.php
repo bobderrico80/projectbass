@@ -4,6 +4,7 @@
 		case 'students':
 		?>
 			<ul id="sidebarMenu">
+				<li class="menuItem"><a href="index.php">Student List</a></li>
 				<li class="menuItem"><a href="addNewStudent.php">Add New Student</a></li>
 			</ul>
 		<?php

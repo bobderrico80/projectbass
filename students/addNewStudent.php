@@ -17,13 +17,13 @@
 						
 						//Check if first name is complete
 						if (empty($_POST['studentFirst'])) {
-							$errMsgs['studentFirstErr'] = "Student's first name is required";
+							$errMsgs['studentFirstErr'] = "Student's first name is required.";
 							$errFlag = true;
 						}
 
 						//Check if last name is complete
 						if (empty($_POST['studentLast'])) {
-							$errMsgs['studentLastErr'] = "Student's last name is required";
+							$errMsgs['studentLastErr'] = "Student's last name is required.";
 							$errFlag = true;
 						}
 						
@@ -32,6 +32,7 @@
 							//Set error message to be displayed on the form
 							?>
 								<div class="formError">
+									<h1>Student was unsuccessfully added due to the following error(s):</h1>
 									<p><?php
 										foreach ($errMsgs as $msg) {
 											echo $msg . "<br>";
@@ -55,8 +56,6 @@
 							$studentPhone2 = $_POST['studentPhone2'];
 							$studentEmail1 = $_POST['studentEmail1'];
 							$studentEmail2 = $_POST['studentEmail2'];
-							var_dump($studentFirst);
-							var_dump($studentLast);
 							
 							//Prepare statement
 							$userdb = $_SESSION['SESS_USER_DB'];
@@ -96,9 +95,10 @@
 							
 							//Display success message
 							?>
-								<?php echo mysqli_error($userdb); ?>
+								<?php echo mysqli_error($userdb); // display error message for debugging purposes ?>
 								<div class="formSuccess">
-									<p>New student, <?php echo $studentFirst . ' ' . $studentLast; ?> successfully added!</p>
+									<h1>New student, <?php echo $studentFirst . ' ' . $studentLast; ?>, successfully added!</h1>
+									<p><a href="index.php">View the student list</a>, or add another student below:</p>
 								</div>
 							<?php
 						}
@@ -108,7 +108,7 @@
 					<form name="addNewStudent" action="addNewStudent.php" method="post">
 						<fieldset>
 							<legend>Name</legend>
-							<label for="studentFirst">First:</label><input type="text" name="studentFirst"/><span class="formError">*</span><br>
+							<label for="studentFirst">First:</label><input type="text" name="studentFirst" autofocus="autofocus"/><span class="formError">*</span><br>
 							<label for="studentLast">Last:</label><input type="text" name="studentLast"/><span class="formError">*</span>
 						</fieldset>
 						<fieldset>
@@ -167,13 +167,13 @@
 									get_list_states();
 								?>
 							</select><br>
-							<label for="studentZIP">ZIP:</label><input type="text" name="studentZIP"/><br>
-							<label for="studentPhone1">Phone 1:</label><input type="text" name="studentPhone1"/><br>
-							<label for="studentPhone2">Phone 2:</label><input type="text" name="studentPhone2"/><br>
+							<label for="studentZIP">ZIP:</label><input type="text" name="studentZIP" class="zip" placeholder="12345-6789" maxlength="10"/><br>
+							<label for="studentPhone1">Phone 1:</label><input type="text" name="studentPhone1" class="phone" placeholder="123-456-7890" maxlength="12"/><br>
+							<label for="studentPhone2">Phone 2:</label><input type="text" name="studentPhone2" class="phone" placeholder="123-456-7890" maxlength="12"/><br>
 							<label for="studentEmail1">Email 1:</label><input type="text" name="studentEmail1"/><br>
 							<label for="studentEmail2">Email 2:</label><input type="text" name="studentEmail2"/><br>
 						</fieldset>
-						<input type="submit" value="Add Student"/>
+						<input type="submit" value="Add Student"/> <input type="reset" value="Clear Form"/>
 					</form>
 					<p><span class="formError">* - Required Fields</span></p>
 				</div>
