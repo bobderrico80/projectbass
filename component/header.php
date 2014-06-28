@@ -1,12 +1,8 @@
-<?php
-	require_once(LOGIN_DIR . 'auth.php'); //checks if user is logged in
-	require_once(LIB_DIR . 'userconnection.php'); //connects to the user's database
-?>
-
 <!DOCTYPE html>
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="/stylesheet.css"/>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<title>Project Bass - <?php get_page_title(); ?></title>
 	</head>
 	<body>

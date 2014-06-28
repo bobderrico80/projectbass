@@ -1,4 +1,6 @@
 <?php
+	require_once(LOGIN_DIR . 'auth.php'); //checks if user is logged in
+	require_once(LIB_DIR . 'userconnection.php'); //connects to the user's database
 	get_header();
 ?>
 		<div id="contentWrapper" class="tableArea">

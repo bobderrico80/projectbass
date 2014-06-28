@@ -5,7 +5,7 @@
 		?>
 			<ul id="sidebarMenu">
 				<li class="menuItem"><a href="index.php">Student List</a></li>
-				<li class="menuItem"><a href="addNewStudent.php">Add New Student</a></li>
+				<li class="menuItem"><a href="editStudent.php?context=add&return=1">Add New Student</a></li>
 			</ul>
 		<?php
 			break;
