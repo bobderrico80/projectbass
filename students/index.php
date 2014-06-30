@@ -46,12 +46,10 @@
 </div>
 
 <script>
-/*
+	//row click event handler
 	$("tr").click(function() {
-		//TODO: FIX THIS!!!!
-		window.location.href("editStudent.php?context=edit&return=0&id=" + $(this).attr("id"));
+		window.location.href="editStudent.php?context=edit&return=0&id=" + $(this).attr("id");
 	});
-*/
 
 </script>
 

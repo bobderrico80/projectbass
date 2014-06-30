@@ -82,9 +82,57 @@
 		}
 		
 	}
-?>
+	
+	//Gets field values based on ID if context is edit
+	if (($_GET['context'] == 'edit') && isset($_GET['id'])) {
+		
+		//Prepare statement
+		$userdb = $_SESSION['SESS_USER_DB'];
+		if(!$stmt = mysqli_prepare($userdb, '
+				SELECT * FROM students WHERE studentID = ?
+			')) {
+				die(mysqli_error($userdb));
+			}
 
-<?php
+		//Bind parameters
+		if(!mysqli_stmt_bind_param($stmt, 'i', $_GET['id'])) {
+			die(mysqli_error($userdb));
+		}
+		
+		//Execute statement
+		if(!mysqli_stmt_execute($stmt)) {
+				die(mysqli_error($userdb));
+			}
+		
+		//Get results
+		if(!mysqli_stmt_bind_result($stmt, 
+			$studentID,
+			$studentStatus,
+			$studentLast,
+			$studentFirst,
+			$studentGradeID,
+			$studentHRID,
+			$studentTeamID,
+			$studentParents,
+			$studentAddress,
+			$studentCity,
+			$studentST,
+			$studentZIP,
+			$studentPhone1,
+			$studentPhone2,
+			$studentEmail1,
+			$studentEmail2)) 
+			{
+			die(mysqli_error($userdb));
+		}
+		
+		while(mysqli_stmt_fetch($stmt));
+		
+		mysqli_stmt_close($stmt);
+		
+	}
+	
+	//Page output begins here
 	get_header();
 ?>
 <div id="contentWrapper" class="tableArea">
@@ -129,12 +177,13 @@
 						</div>
 					<?php
 				}
+			//TODO::MAKE FORM SUBMIT CORRECTLY
 			?>
 			<form id="editStudent" name="editStudent" action="editStudent.php?context=add&return=1" method="post">
 				<fieldset>
 					<legend>Name</legend>
-					<label for="studentFirst">First:</label><input type="text" name="studentFirst" autofocus="autofocus"/><span class="formError">*</span><br>
-					<label for="studentLast">Last:</label><input type="text" name="studentLast"/><span class="formError">*</span>
+					<label for="studentFirst">First:</label><input type="text" name="studentFirst" value="<?php echo $studentFirst;?>" autofocus="autofocus"/><span class="formError">*</span><br>
+					<label for="studentLast">Last:</label><input type="text" name="studentLast" value="<?php echo $studentLast;?>"/><span class="formError">*</span>
 				</fieldset>
 				<fieldset>
 					<legend>School Info</legend>
@@ -149,7 +198,7 @@
 									grades
 								ORDER BY
 									gradeName;
-							');
+							', $studentGradeID);
 						?>
 					</select><br>
 					<label for="studentHRID">Homeroom:</label>
@@ -163,7 +212,7 @@
 									homerooms
 								ORDER BY
 									homeroomName
-							');
+							', $studentHRID);
 						?>
 					</select><br>
 					<label for="studentTeamID">Team:</label>
@@ -177,28 +226,36 @@
 									teams
 								ORDER BY
 									teamName
-							');
+							', $studentTeamID);
 						?>
 					</select><br>
 				</fieldset>
 				<fieldset>
 					<legend>Contact Information</legend>
-					<label for="studentParents">Parent(s):</label><input type="text" name="studentParents"/><br>
-					<label for="studentAddress">Street Address:</label><input type="text" name="studentAddress"/><br>
-					<label for="studentCity">City:</label><input type="text" name="studentCity"/><br>
+					<label for="studentParents">Parent(s):</label><input type="text" name="studentParents" value="<?php echo $studentParents;?>"/><br>
+					<label for="studentAddress">Street Address:</label><input type="text" name="studentAddress" value="<?php echo $studentAddress;?>"/><br>
+					<label for="studentCity">City:</label><input type="text" name="studentCity" value="<?php echo $studentCity;?>"/><br>
 					<label for="studentST">State:</label>
 					<select name="studentST">
 						<?php
-							get_list_states();
+							get_list_states($studentST);
 						?>
 					</select><br>
-					<label for="studentZIP">ZIP:</label><input type="text" name="studentZIP" class="zip" placeholder="12345-6789" maxlength="10"/><br>
-					<label for="studentPhone1">Phone 1:</label><input type="text" name="studentPhone1" class="phone" placeholder="123-456-7890" maxlength="12"/><br>
-					<label for="studentPhone2">Phone 2:</label><input type="text" name="studentPhone2" class="phone" placeholder="123-456-7890" maxlength="12"/><br>
-					<label for="studentEmail1">Email 1:</label><input type="text" name="studentEmail1"/><br>
-					<label for="studentEmail2">Email 2:</label><input type="text" name="studentEmail2"/><br>
+					<label for="studentZIP">ZIP:</label><input type="text" name="studentZIP" class="zip" placeholder="12345-6789" maxlength="10"  value="<?php echo $studentZIP;?>"/><br>
+					<label for="studentPhone1">Phone 1:</label><input type="text" name="studentPhone1" class="phone" placeholder="123-456-7890" maxlength="12" value="<?php echo $studentPhone1;?>"/><br>
+					<label for="studentPhone2">Phone 2:</label><input type="text" name="studentPhone2" class="phone" placeholder="123-456-7890" maxlength="12" value="<?php echo $studentPhone2;?>"/><br>
+					<label for="studentEmail1">Email 1:</label><input type="text" name="studentEmail1" value="<?php echo $studentEmail1;?>"/><br>
+					<label for="studentEmail2">Email 2:</label><input type="text" name="studentEmail2" value="<?php echo $studentEmail2;?>"/><br>
 				</fieldset>
-				<input type="submit" value="Add Student"/> <input type="reset" value="Clear Form"/>
+				<?php
+					//sets text on submit button based on context
+					if($_GET['context'] == 'edit') {
+						$submitval = 'Save';
+					} else {
+						$submitval = 'Add Student';
+					}
+				?>
+				<input type="submit" value="<?php echo $submitval ?>"/> <input type="reset" value="Clear Form"/>
 			</form>
 			
 			<?php
@@ -208,7 +265,7 @@
 				}
 			?>
 			
-			<input type="checkbox" id="returnMode" name="returnMode" <?php echo $checked;?>><label for="returnMode" class="cbLabel">Add another student after submitting</label>
+			<input type="checkbox" id="returnMode" name="returnMode" <?php echo $checked;?>><label for="returnMode" class="cbLabel">Do not return to student list after saving.</label>
 			<p><span class="formError">* - Required Fields</span></p>
 		</div>
 	</div>

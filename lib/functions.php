@@ -89,19 +89,30 @@
 	//Populates a listbox (<select>) with options based on an SQL query
 	/* Select only two columns! the first column should be an index value
 	(i.e. the primary key of the table), and the second column should be
-	the text to be displayed as the option in the listbox */
-	function get_list_contents($sql) {
+	the text to be displayed as the option in the listbox 
+	
+	The second parameter is the index of the preselected option
+	*/
+	function get_list_contents($sql, $preselect = null) {
 		
 		$userdb = $_SESSION['SESS_USER_DB'];
-		$rst = mysqli_query($userdb,$sql);
+		if (!$rst = mysqli_query($userdb,$sql)) {
+			die(mysqli_error($userdb));
+		}
 		
 		while ($record = mysqli_fetch_row($rst)) {
-			echo '<option value = "' . $record[0] . '">' . $record[1] .'</option>';
+			if ($preselect == $record[0]) {
+				$selected = "selected";
+			} else {
+				$selected = null;
+			}
+			echo '<option value = "' . $record[0] . '" ' . $selected .  '>' . $record[1] .'</option>';
 		}
 	}
 	
 	//Populates a listbox with the US States (values as abbreviations)
-	function get_list_states(){
+	//$preselected (optional) is the value that should be preselected)
+	function get_list_states($preselect = null){
 		$states = array('AL'=>"Alabama",
 					'AK'=>"Alaska",
 					'AZ'=>"Arizona",
@@ -154,7 +165,12 @@
 					'WI'=>"Wisconsin",
 					'WY'=>"Wyoming");
 		foreach ($states as $key=>$val) {
-			echo '<option value="' . $key . '">' . $val . '</option>';
+			if ($preselect == $key) {
+				$selected = 'selected';
+			} else {
+				$selected = null;
+			}
+			echo '<option value="' . $key . '" ' . $selected . '>' . $val . '</option>';
 		}
 	}
 ?>
