@@ -4,6 +4,11 @@
 		require_once(COMP_DIR . 'header.php');
 	}
 	
+	//Displays footer
+	function get_footer() {
+		require_once('projectbass/component/footer.php');
+	}
+	
 	//Returns current parent directory of calling php script
 	function get_parent_dir() {
 		$path = $_SERVER['PHP_SELF'];
