@@ -6,10 +6,11 @@
 	$database = 'rhytxfpd_projectbass_admin';
 	
 	//Connect to database
-	$db = mysqli_connect($hostname, $user, $pw, $database);
-	
-	//Check connection
-	if (mysqli_connect_errno()) {
-		die('Failed to connect to MySQL server: ' . mysqli_connect_error());
+	try {
+		$db = new PDO('mysql:host=' . $hostname . ';dbname=' . $database,$user,$pw);
+	} catch(PDOException $e) {
+		echo $e->getMessage();
+		die();
 	}
+
 ?>

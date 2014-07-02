@@ -1,6 +1,5 @@
 <?php
 	require_once(LOGIN_DIR . 'auth.php'); //checks if user is logged in
-	require_once(LIB_DIR . 'userconnection.php'); //connects to the user's database
 
 	//checks to see if form has been submitted
 	if ($_SERVER['REQUEST_METHOD']=='POST') {
@@ -24,55 +23,69 @@
 		//If there were no errors...
 		if (!$errFlag) { 
 			//Get variables from POST
-			$studentFirst = $_POST['studentFirst'];
-			$studentLast = $_POST['studentLast'];
-			$studentGradeID = $_POST['studentGradeID'];
-			$studentHRID = $_POST['studentHRID'];
-			$studentTeamID = $_POST['studentTeamID'];
-			$studentParents = $_POST['studentParents'];
-			$studentAddress = $_POST['studentAddress'];
-			$studentCity = $_POST['studentCity'];
-			$studentST = $_POST['studentST'];
-			$studentZIP = $_POST['studentZIP'];
-			$studentPhone1 = $_POST['studentPhone1'];
-			$studentPhone2 = $_POST['studentPhone2'];
-			$studentEmail1 = $_POST['studentEmail1'];
-			$studentEmail2 = $_POST['studentEmail2'];
-								
-			//Prepare statement
-			$userdb = $_SESSION['SESS_USER_DB'];
-			if(!$stmt = mysqli_prepare($userdb, '
-				INSERT INTO
-					students (
-						studentStatus,
-						studentLast,
-						studentFirst,
-						studentGradeID,
-						studentHRID,
-						studentTeamID,
-						studentParents,
-						studentAddress,
-						studentCity,
-						studentST,
-						studentZIP,
-						studentPhone1,
-						studentPhone2,
-						studentEmail1,
-						studentEmail2
+			$values = array (
+				':studentLast'=>$_POST['studentLast'],
+				':studentFirst'=>$_POST['studentFirst'],
+				':studentGradeID'=>$_POST['studentGradeID'],
+				':studentHRID'=>$_POST['studentHRID'],
+				':studentTeamID'=>$_POST['studentTeamID'],
+				':studentParents'=>$_POST['studentParents'],
+				':studentAddress'=>$_POST['studentAddress'],
+				':studentCity'=>$_POST['studentCity'],
+				':studentST'=>$_POST['studentST'],
+				':studentZIP'=>$_POST['studentZIP'],
+				':studentPhone1'=>$_POST['studentPhone1'],
+				':studentPhone2'=>$_POST['studentPhone2'],
+				':studentEmail1'=>$_POST['studentEmail1'],
+				':studentEmail2'=>$_POST['studentEmail2'],
+			);
+			
+
+			
+			//INSERT as a new row into the students database
+			try {
+				$userdb = userConnect();
+				$stmt = $userdb->prepare('
+					INSERT INTO
+						students (
+							studentStatus,
+							studentLast,
+							studentFirst,
+							studentGradeID,
+							studentHRID,
+							studentTeamID,
+							studentParents,
+							studentAddress,
+							studentCity,
+							studentST,
+							studentZIP,
+							studentPhone1,
+							studentPhone2,
+							studentEmail1,
+							studentEmail2
+						)
+					VALUES (
+						"active",
+						:studentLast,
+						:studentFirst,
+						:studentGradeID,
+						:studentHRID,
+						:studentTeamID,
+						:studentParents,
+						:studentAddress,
+						:studentCity,
+						:studentST,
+						:studentZIP,
+						:studentPhone1,
+						:studentPhone2,
+						:studentEmail1,
+						:studentEmail2
 					)
-				VALUES ("active", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
-			')) {
-				die(mysqli_error($userdb));
-			}
-								
-			//Bind parameters
-			if(!mysqli_stmt_bind_param($stmt, 'ssiiisssssssss', $studentLast, $studentFirst, $studentGradeID, $studentHRID, $studentTeamID, $studentParents, $studentAddress, $studentCity, $studentST, $studentZIP, $studentPhone1, $studentPhone2, $studentEmail1, $studentEmail2)) {
-				die(mysqli_error($userdb));
-			}
-								
-			//Execute
-			if(!mysqli_stmt_execute($stmt)) {
-				die(mysqli_error($userdb));
+				');
+				$stmt->execute($values);
+			} catch(PDOException $e) {
+				echo $e->getMessage();
+				die();
 			}
 		}
 		
@@ -86,50 +99,15 @@
 	//Gets field values based on ID if context is edit
 	if (($_GET['context'] == 'edit') && isset($_GET['id'])) {
 		
-		//Prepare statement
-		$userdb = $_SESSION['SESS_USER_DB'];
-		if(!$stmt = mysqli_prepare($userdb, '
-				SELECT * FROM students WHERE studentID = ?
-			')) {
-				die(mysqli_error($userdb));
-			}
-
-		//Bind parameters
-		if(!mysqli_stmt_bind_param($stmt, 'i', $_GET['id'])) {
-			die(mysqli_error($userdb));
+		//SELECT from user table where student ID = ID value from GET
+		try {
+			$userdb = userConnect();
+			$stmt = $userdb->prepare('SELECT * FROM students WHERE studentID = ?');
+			$stmt->execute(array($_GET['id']));
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		} catch (PDOException $e) {
+			echo $e->getMessage();
 		}
-		
-		//Execute statement
-		if(!mysqli_stmt_execute($stmt)) {
-				die(mysqli_error($userdb));
-			}
-		
-		//Get results
-		if(!mysqli_stmt_bind_result($stmt, 
-			$studentID,
-			$studentStatus,
-			$studentLast,
-			$studentFirst,
-			$studentGradeID,
-			$studentHRID,
-			$studentTeamID,
-			$studentParents,
-			$studentAddress,
-			$studentCity,
-			$studentST,
-			$studentZIP,
-			$studentPhone1,
-			$studentPhone2,
-			$studentEmail1,
-			$studentEmail2)) 
-			{
-			die(mysqli_error($userdb));
-		}
-		
-		while(mysqli_stmt_fetch($stmt));
-		
-		mysqli_stmt_close($stmt);
-		
 	}
 	
 	//Page output begins here
@@ -169,10 +147,9 @@
 				
 				//Displays success message from previous submission
 				if ($_SERVER['REQUEST_METHOD']=='POST' && !$errFlag) {
-					echo mysqli_error($userdb); //display error message for debugging purposes
 					?>
 						<div class="formSuccess">
-							<h1> New student, <?php echo $studentFirst . ' ' . $studentLast; ?>, successfully added!</h1>
+							<h1> New student, <?php echo $_POST['studentFirst'] . ' ' . $_POST['studentLast']; ?>, successfully added!</h1>
 							<p><a href="index.php">View the student list</a>, or add another student below:</p>
 						</div>
 					<?php
@@ -182,8 +159,8 @@
 			<form id="editStudent" name="editStudent" action="editStudent.php?context=add&return=1" method="post">
 				<fieldset>
 					<legend>Name</legend>
-					<label for="studentFirst">First:</label><input type="text" name="studentFirst" value="<?php echo $studentFirst;?>" autofocus="autofocus"/><span class="formError">*</span><br>
-					<label for="studentLast">Last:</label><input type="text" name="studentLast" value="<?php echo $studentLast;?>"/><span class="formError">*</span>
+					<label for="studentFirst">First:</label><input type="text" name="studentFirst" value="<?php echo $result['studentFirst'];?>" autofocus="autofocus"/><span class="formError">*</span><br>
+					<label for="studentLast">Last:</label><input type="text" name="studentLast" value="<?php echo $result['studentLast'];?>"/><span class="formError">*</span> 
 				</fieldset>
 				<fieldset>
 					<legend>School Info</legend>
@@ -198,7 +175,7 @@
 									grades
 								ORDER BY
 									gradeName;
-							', $studentGradeID);
+							', $result['studentGradeID']);
 						?>
 					</select><br>
 					<label for="studentHRID">Homeroom:</label>
@@ -212,7 +189,7 @@
 									homerooms
 								ORDER BY
 									homeroomName
-							', $studentHRID);
+							', $result['studentHRID']);
 						?>
 					</select><br>
 					<label for="studentTeamID">Team:</label>
@@ -226,26 +203,26 @@
 									teams
 								ORDER BY
 									teamName
-							', $studentTeamID);
+							', $result['studentTeamID']);
 						?>
 					</select><br>
 				</fieldset>
 				<fieldset>
 					<legend>Contact Information</legend>
-					<label for="studentParents">Parent(s):</label><input type="text" name="studentParents" value="<?php echo $studentParents;?>"/><br>
-					<label for="studentAddress">Street Address:</label><input type="text" name="studentAddress" value="<?php echo $studentAddress;?>"/><br>
-					<label for="studentCity">City:</label><input type="text" name="studentCity" value="<?php echo $studentCity;?>"/><br>
+					<label for="studentParents">Parent(s):</label><input type="text" name="studentParents" value="<?php echo $result['studentParents'];?>"/><br>
+					<label for="studentAddress">Street Address:</label><input type="text" name="studentAddress" value="<?php echo $result['studentAddress'];?>"/><br>
+					<label for="studentCity">City:</label><input type="text" name="studentCity" value="<?php echo $result['studentCity'];?>"/><br>
 					<label for="studentST">State:</label>
 					<select name="studentST">
 						<?php
-							get_list_states($studentST);
+							get_list_states($result['studentST']);
 						?>
 					</select><br>
-					<label for="studentZIP">ZIP:</label><input type="text" name="studentZIP" class="zip" placeholder="12345-6789" maxlength="10"  value="<?php echo $studentZIP;?>"/><br>
-					<label for="studentPhone1">Phone 1:</label><input type="text" name="studentPhone1" class="phone" placeholder="123-456-7890" maxlength="12" value="<?php echo $studentPhone1;?>"/><br>
-					<label for="studentPhone2">Phone 2:</label><input type="text" name="studentPhone2" class="phone" placeholder="123-456-7890" maxlength="12" value="<?php echo $studentPhone2;?>"/><br>
-					<label for="studentEmail1">Email 1:</label><input type="text" name="studentEmail1" value="<?php echo $studentEmail1;?>"/><br>
-					<label for="studentEmail2">Email 2:</label><input type="text" name="studentEmail2" value="<?php echo $studentEmail2;?>"/><br>
+					<label for="studentZIP">ZIP:</label><input type="text" name="studentZIP" class="zip" placeholder="12345-6789" maxlength="10"  value="<?php echo $result['studentZIP'];?>"/><br>
+					<label for="studentPhone1">Phone 1:</label><input type="text" name="studentPhone1" class="phone" placeholder="123-456-7890" maxlength="12" value="<?php echo $result['studentPhone1'];?>"/><br>
+					<label for="studentPhone2">Phone 2:</label><input type="text" name="studentPhone2" class="phone" placeholder="123-456-7890" maxlength="12" value="<?php echo $result['studentPhone2'];?>"/><br>
+					<label for="studentEmail1">Email 1:</label><input type="text" name="studentEmail1" value="<?php echo $result['studentEmail1'];?>"/><br>
+					<label for="studentEmail2">Email 2:</label><input type="text" name="studentEmail2" value="<?php echo $result['studentEmail2'];?>"/><br>
 				</fieldset>
 				<?php
 					//sets text on submit button based on context

@@ -1,4 +1,5 @@
 <?php
+	
 	//sets path constants
 	define(ROOT_DIR, dirname(__FILE__) . '/'); //Root path
 	define(LIB_DIR, ROOT_DIR . 'lib/'); //library files path

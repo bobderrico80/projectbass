@@ -1,4 +1,22 @@
 <?php
+	//Connects to user database
+	function userConnect() {
+		//MySQL connection variables
+		$hostname = 'localhost';
+		$user = 'rhytxfpd_pbu' . $_SESSION['SESS_USER_ID'];
+		$pw = $_SESSION['SESS_USER_PW'];
+		$database = 'rhytxfpd_projectbass_' . $_SESSION['SESS_USER_ID'];
+		
+		//connect to database
+		try {
+			$userdb = new PDO('mysql:host=' . $hostname . ';dbname=' . $database, $user, $pw);
+			return $userdb;
+		} catch(PDOException $e) {
+			echo $e->getMessage();
+			die();
+		}
+	}
+	
 	//Displays header
 	function get_header() {
 		require_once(COMP_DIR . 'header.php');
@@ -52,38 +70,45 @@
 	*/
 	function display_table($sql, $tid) {
 		
-		$userdb = $_SESSION['SESS_USER_DB'];
-		$rst = mysqli_query($userdb,$sql);
+		$userdb = userConnect();
 		
-		//code to print column headings
-		$fields = mysqli_fetch_fields($rst);
-		echo '<table id="' . $tid . '" class="recordset">';
-		echo '<thead>';
-		echo '<tr id="header">';
-		echo '<td></td>'; //empty cell for checkbox column
-		for ($i = 1; $i < count($fields); $i++) {
-			echo '<td>' . $fields[$i]->name . '</td>';
-		}
-		echo '</tr>';
-		echo '</thead>';
-		
-		//code to print records
-		echo '<tbody>';
-		while ($record = mysqli_fetch_row($rst)) {
-			$rowcount++;
-			if ($rowcount % 2 == 0) {
-				echo '<tr id="' . $record[0] .'" class="altrow">';
-			} else {
-				echo '<tr id="' . $record[0] .'">';
-			}
-			echo '<td><input type="checkbox" class="recordselect" id="' . $record[0] . '"/></td>';
-			for ($i = 1; $i < count($record); $i++) {
-				echo '<td>' . $record[$i] . '</td>';
+		try {
+			//code to print column headings
+			$stmt = $userdb->query($sql . ' LIMIT 1');
+			$fields = array_keys($stmt->fetch(PDO::FETCH_ASSOC));
+			echo '<table id="' . $tid . '" class="recordset">';
+			echo '<thead>';
+			echo '<tr id="header">';
+			echo '<td></td>'; //empty cell for checkbox column
+			for ($i = 1; $i < count($fields); $i++) {
+				echo '<td>' . $fields[$i] . '</td>';
 			}
 			echo '</tr>';
+			echo '</thead>';
+			$stmt = null;
+			
+			//code to print records
+			$stmt = $userdb->query($sql);
+			echo '<tbody>';
+			while ($record = $stmt->fetch(PDO::FETCH_NUM)) {
+				$rowcount++;
+				if ($rowcount % 2 == 0) {
+					echo '<tr id="' . $record[0] .'" class="altrow">';
+				} else {
+					echo '<tr id="' . $record[0] .'">';
+				}
+				echo '<td><input type="checkbox" class="recordselect" id="' . $record[0] . '"/></td>';
+				for ($i = 1; $i < count($record); $i++) {
+					echo '<td>' . $record[$i] . '</td>';
+				}
+				echo '</tr>';
+			}
+			echo '</tbody>';		
+			echo '</table>';
+		} catch(PDOException $e) {
+			echo $e->getMessage();
+			die();
 		}
-		echo '</tbody>';		
-		echo '</table>';
 	}
 	
 	//Populates a listbox (<select>) with options based on an SQL query
@@ -95,20 +120,23 @@
 	*/
 	function get_list_contents($sql, $preselect = null) {
 		
-		$userdb = $_SESSION['SESS_USER_DB'];
-		if (!$rst = mysqli_query($userdb,$sql)) {
-			die(mysqli_error($userdb));
-		}
-		
-		while ($record = mysqli_fetch_row($rst)) {
-			if ($preselect == $record[0]) {
-				$selected = "selected";
-			} else {
-				$selected = null;
+		try {
+			$userdb = userConnect();
+			$stmt = $userdb->query($sql);
+			
+			while ($record = $stmt->fetch(PDO::FETCH_NUM)) {
+				if ($preselect == $record[0]) {
+					$selected = "selected";
+				} else {
+					$selected = null;
+				}
+				echo '<option value = "' . $record[0] . '" ' . $selected .  '>' . $record[1] .'</option>';
 			}
-			echo '<option value = "' . $record[0] . '" ' . $selected .  '>' . $record[1] .'</option>';
+		} catch (PDOException $e) {
+			echo $e->getMessage();
+			die();
 		}
-	}
+	};
 	
 	//Populates a listbox with the US States (values as abbreviations)
 	//$preselected (optional) is the value that should be preselected)

@@ -11,19 +11,9 @@
 	//validation error flag
 	$errFlag = false;
 	
-	//function to sanitize form input
-	function clean($val) {
-		$val = @trim($val);
-		if (get_magic_quotes_gpc()) {
-			$val = stripslashes($val);
-		}
-		global $db;
-		return mysqli_real_escape_string($db, $val);
-	}
-	
-	//sanitize form input
-	$username = clean($_POST['username']);
-	$password = clean($_POST['password']);
+	//get data from POST
+	$username = $_POST['username'];
+	$password = $_POST['password'];
 	
 	//validate input
 	if ($username == '') {
@@ -43,16 +33,20 @@
 		exit();
 	}
 	
-	//create query
-	$sql = "SELECT * FROM users WHERE userName = \"$username\" AND userPW = \"$password\"";
-	$rst = mysqli_query($db, $sql);
+	try {
+		//look up entered username and password in users table using a prepared statement
+		$stmt = $db->prepare('SELECT * FROM users WHERE userName = :userName AND userPW = :userPW');
+		$stmt->bindValue(':userName', $username, PDO::PARAM_STR);
+		$stmt->bindValue(':userPW', $password, PDO::PARAM_STR);
+		$stmt->execute();
 	
-	//check whether query was successful
-	if($rst) {
-		if(mysqli_num_rows($rst) > 0) {
-			//Login successful!
+		//count number of rows in results
+		$count = $stmt->rowCount();
+		
+		if($count > 0) {
+			//login succesful!
 			session_regenerate_id();
-			$user = mysqli_fetch_assoc($rst);
+			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 			$_SESSION['SESS_USER_ID'] = $user['userId'];
 			$_SESSION['SESS_USER_PW'] = $user['userPW'];
 			$_SESSION['SESS_USER_FIRST'] = $user['userFirst'];
@@ -72,7 +66,8 @@
 				exit();
 			}
 		}
-	} else {
-		die("Query failed");
+	} catch(PDOException $e) {
+		echo $e->getMessage();
+		die();
 	}
 ?>
