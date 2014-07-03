@@ -22,70 +22,121 @@
 						
 		//If there were no errors...
 		if (!$errFlag) { 
-			//Get variables from POST
-			$values = array (
-				':studentLast'=>$_POST['studentLast'],
-				':studentFirst'=>$_POST['studentFirst'],
-				':studentGradeID'=>$_POST['studentGradeID'],
-				':studentHRID'=>$_POST['studentHRID'],
-				':studentTeamID'=>$_POST['studentTeamID'],
-				':studentParents'=>$_POST['studentParents'],
-				':studentAddress'=>$_POST['studentAddress'],
-				':studentCity'=>$_POST['studentCity'],
-				':studentST'=>$_POST['studentST'],
-				':studentZIP'=>$_POST['studentZIP'],
-				':studentPhone1'=>$_POST['studentPhone1'],
-				':studentPhone2'=>$_POST['studentPhone2'],
-				':studentEmail1'=>$_POST['studentEmail1'],
-				':studentEmail2'=>$_POST['studentEmail2'],
-			);
 			
+			//If context is 'edit'
+			if ($_GET['context'] == 'edit') {
+				
+				//Get variables from POST
+				$values = array (
+					':studentLast'=>$_POST['studentLast'],
+					':studentFirst'=>$_POST['studentFirst'],
+					':studentGradeID'=>$_POST['studentGradeID'],
+					':studentHRID'=>$_POST['studentHRID'],
+					':studentTeamID'=>$_POST['studentTeamID'],
+					':studentParents'=>$_POST['studentParents'],
+					':studentAddress'=>$_POST['studentAddress'],
+					':studentCity'=>$_POST['studentCity'],
+					':studentST'=>$_POST['studentST'],
+					':studentZIP'=>$_POST['studentZIP'],
+					':studentPhone1'=>$_POST['studentPhone1'],
+					':studentPhone2'=>$_POST['studentPhone2'],
+					':studentEmail1'=>$_POST['studentEmail1'],
+					':studentEmail2'=>$_POST['studentEmail2'],
+					':studentID'=>$_POST['studentID']
+				);
+				
+				//UPDATE existing student WHERE ID matches the hidden input element
+				try {
+					$userdb = userConnect();
+					$stmt = $userdb->prepare ('
+						UPDATE students
+						SET
+							studentLast = :studentLast,
+							studentFirst = :studentFirst,
+							studentGradeID = :studentGradeID,
+							studentHRID = :studentHRID,
+							studentTeamID = :studentTeamID,
+							studentParents = :studentParents,
+							studentAddress = :studentAddress,
+							studentCity = :studentCity,
+							studentST = :studentST,
+							studentZIP = :studentZIP,
+							studentPhone1 = :studentPhone1,
+							studentPhone2 = :studentPhone2,
+							studentEmail1 = :studentEmail1,
+							studentEmail2 = :studentEmail2
+						WHERE studentID = :studentID
+					');
+					$stmt->execute($values);
+				} catch(PDOException $e) {
+					echo $e->getMessage();
+					die();
+				}
+			} else { //if context is 'add' or something else
+			
+				//Get variables from POST
+				$values = array (
+					':studentLast'=>$_POST['studentLast'],
+					':studentFirst'=>$_POST['studentFirst'],
+					':studentGradeID'=>$_POST['studentGradeID'],
+					':studentHRID'=>$_POST['studentHRID'],
+					':studentTeamID'=>$_POST['studentTeamID'],
+					':studentParents'=>$_POST['studentParents'],
+					':studentAddress'=>$_POST['studentAddress'],
+					':studentCity'=>$_POST['studentCity'],
+					':studentST'=>$_POST['studentST'],
+					':studentZIP'=>$_POST['studentZIP'],
+					':studentPhone1'=>$_POST['studentPhone1'],
+					':studentPhone2'=>$_POST['studentPhone2'],
+					':studentEmail1'=>$_POST['studentEmail1'],
+					':studentEmail2'=>$_POST['studentEmail2'],
+				);
 
-			
-			//INSERT as a new row into the students database
-			try {
-				$userdb = userConnect();
-				$stmt = $userdb->prepare('
-					INSERT INTO
-						students (
-							studentStatus,
-							studentLast,
-							studentFirst,
-							studentGradeID,
-							studentHRID,
-							studentTeamID,
-							studentParents,
-							studentAddress,
-							studentCity,
-							studentST,
-							studentZIP,
-							studentPhone1,
-							studentPhone2,
-							studentEmail1,
-							studentEmail2
+				//INSERT as a new row into the students database
+				try {
+					$userdb = userConnect();
+					$stmt = $userdb->prepare('
+						INSERT INTO
+							students (
+								studentStatus,
+								studentLast,
+								studentFirst,
+								studentGradeID,
+								studentHRID,
+								studentTeamID,
+								studentParents,
+								studentAddress,
+								studentCity,
+								studentST,
+								studentZIP,
+								studentPhone1,
+								studentPhone2,
+								studentEmail1,
+								studentEmail2
+							)
+						VALUES (
+							"active",
+							:studentLast,
+							:studentFirst,
+							:studentGradeID,
+							:studentHRID,
+							:studentTeamID,
+							:studentParents,
+							:studentAddress,
+							:studentCity,
+							:studentST,
+							:studentZIP,
+							:studentPhone1,
+							:studentPhone2,
+							:studentEmail1,
+							:studentEmail2
 						)
-					VALUES (
-						"active",
-						:studentLast,
-						:studentFirst,
-						:studentGradeID,
-						:studentHRID,
-						:studentTeamID,
-						:studentParents,
-						:studentAddress,
-						:studentCity,
-						:studentST,
-						:studentZIP,
-						:studentPhone1,
-						:studentPhone2,
-						:studentEmail1,
-						:studentEmail2
-					)
-				');
-				$stmt->execute($values);
-			} catch(PDOException $e) {
-				echo $e->getMessage();
-				die();
+					');
+					$stmt->execute($values);
+				} catch(PDOException $e) {
+					echo $e->getMessage();
+					die();
+				}
 			}
 		}
 		
@@ -154,13 +205,20 @@
 						</div>
 					<?php
 				}
-			//TODO::MAKE FORM SUBMIT CORRECTLY
+				
+				//determine form action based on context
+				if ($_GET['context'] == 'edit') {
+					$action = 'editStudent.php?context=edit&return=0';
+				} else {
+					$action = 'editStudent.php?context=add&return=1';
+				}
+			
 			?>
-			<form id="editStudent" name="editStudent" action="editStudent.php?context=add&return=1" method="post">
+			<form id="editStudent" name="editStudent" action=<?php echo $action; ?> method="post">
 				<fieldset>
 					<legend>Name</legend>
-					<label for="studentFirst">First:</label><input type="text" name="studentFirst" value="<?php echo $result['studentFirst'];?>" autofocus="autofocus"/><span class="formError">*</span><br>
-					<label for="studentLast">Last:</label><input type="text" name="studentLast" value="<?php echo $result['studentLast'];?>"/><span class="formError">*</span> 
+					<label for="studentFirst">First:</label><input type="text" name="studentFirst" id="studentFirst" value="<?php echo $result['studentFirst'];?>" autofocus="autofocus"/><span class="formError" id="firstWarning">Required</span><br>
+					<label for="studentLast">Last:</label><input type="text" name="studentLast" id="studentLast" value="<?php echo $result['studentLast'];?>"/><span class="formError" id="lastWarning">Required</span> 
 				</fieldset>
 				<fieldset>
 					<legend>School Info</legend>
@@ -232,7 +290,10 @@
 						$submitval = 'Add Student';
 					}
 				?>
-				<input type="submit" value="<?php echo $submitval ?>"/> <input type="reset" value="Clear Form"/>
+				<div class="buttonContainer">
+					<input type="submit" value="<?php echo $submitval ?>"/> <input type="button" value="Cancel" id="cancel"/>
+				</div>
+				<input type="hidden" name="studentID" value="<?php echo $_GET['id'];?>"/>
 			</form>
 			
 			<?php
@@ -240,16 +301,46 @@
 				if (($_GET['return'] == '1') || !isset($_GET['return'])) {
 					$checked = 'checked';
 				}
-			?>
+				
+				//displays checkbox only on 'add' contet
+				if (($_GET['context'] == 'add')) {
+				
+				?>
 			
-			<input type="checkbox" id="returnMode" name="returnMode" <?php echo $checked;?>><label for="returnMode" class="cbLabel">Do not return to student list after saving.</label>
-			<p><span class="formError">* - Required Fields</span></p>
+				<div class="buttonContainer">
+					<input type="checkbox" id="returnMode" name="returnMode" <?php echo $checked;?>><label for="returnMode" class="cbLabel">Add another student after saving.</label>
+				</div>
+				<?php
+				}
+			?>
 		</div>
 	</div>
 </div>
 
 <script>
 
+	//function to validate required fields
+	function validateField(fieldName, warningName) {
+		if ($("#" + fieldName).val() == "") {
+			$("#" + warningName).show();
+		} else {
+			$("#" + warningName).hide();
+		}
+	}
+	
+	//checks required fields on load
+	validateField("studentFirst", "firstWarning");
+	validateField("studentLast", "lastWarning");
+	
+	//checks required field on blur
+	$("#studentFirst").blur(function(){validateField("studentFirst", "firstWarning")});
+	$("#studentLast").blur(function(){validateField("studentLast", "lastWarning")});
+	
+	//event listener for cancel button
+	$("#cancel").click(function (){
+		window.location.href = "index.php";
+	});
+	
 	//event listener for return mode checkbox
 	$("#returnMode").click(function(){
 		if ($(this).is(":checked")) {
